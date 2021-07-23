@@ -1,0 +1,45 @@
+<?php
+
+namespace DummyNamespace;
+
+use Ifresh\FilemakerModel\FilemakerModel;
+
+class DummyClass extends FilemakerModel
+{
+
+    /*
+     * Name of the layout where our records come from
+     */
+    protected $layout = '';
+
+    /*
+     * The names of fields that need to be parsed as date
+     */
+    protected $dates = [];
+
+    /*
+     * The names of fields that need to be parsed as integer
+     */
+    protected $integers = [];
+
+    /*
+     * The names of fields that need to be parsed as boolean
+     */
+    protected $booleans = [];
+
+    /*
+     * The names of fields that need to be parsed as float
+     */
+    protected $floats = [];
+
+    /*
+     * Array of filemaker fieldnames with our more logical names
+     */
+    protected $translate = [
+//        'Filemaker Field Name' => "application_name",
+    ];
+
+
+}
+
+
