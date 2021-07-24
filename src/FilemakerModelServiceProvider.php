@@ -2,14 +2,12 @@
 
 namespace Ifresh\FilemakerModel;
 
+use Ifresh\FilemakerModel\Commands\MakeFilemakerModelCommand;
 use Illuminate\Support\ServiceProvider;
 use INTERMediator\FileMakerServer\RESTAPI\FMDataAPI;
-use Ifresh\FilemakerModel\Commands\MakeFilemakerModelCommand;
 
 class FilemakerModelServiceProvider extends ServiceProvider
 {
-
-
     public function boot()
     {
         if ($this->app->runningInConsole()) {
@@ -19,13 +17,12 @@ class FilemakerModelServiceProvider extends ServiceProvider
         }
 
         $this->publishes([
-            __DIR__.'/Config/filemaker.php' => config_path('filemaker.php'),
+            __DIR__ . '/Config/filemaker.php' => config_path('filemaker.php'),
         ]);
     }
 
     public function register()
     {
-
         app()->bind('filemaker', function () {
             return new FMDataAPI(
                 config('filemaker.database'),
@@ -34,7 +31,5 @@ class FilemakerModelServiceProvider extends ServiceProvider
                 config('filemaker.host')
             );
         });
-
-
     }
 }

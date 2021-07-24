@@ -2,13 +2,11 @@
 
 namespace Ifresh\FilemakerModel;
 
-use ReflectionClass;
-
 use Ifresh\FilemakerModel\Services\Parser;
-
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use INTERMediator\FileMakerServer\RESTAPI\Supporting\FileMakerRelation;
+use ReflectionClass;
 
 class FilemakerModel
 {
@@ -46,7 +44,6 @@ class FilemakerModel
      */
     protected $translate = [];
 
-
     public function __construct()
     {
         $this->filemaker = app('filemaker');
@@ -57,7 +54,6 @@ class FilemakerModel
         return collect($filemakerRecords)->map(function ($filemakerRecord) {
             $model = new static();
             foreach ($filemakerRecord->getFieldNames() as $filemakerFieldName) {
-
                 $fieldName = $this->getTranslatedFieldname($filemakerFieldName);
 //                dd($fieldName);
 
@@ -65,22 +61,18 @@ class FilemakerModel
             }
 
             return $model;
-
         });
     }
-
 
     public function getSomeRecords(array $queryParameters)
     {
         $filemakerRecords = $this->filemaker->{$this->layout}->query($queryParameters);
-
 
         return $this->parseRecords($filemakerRecords);
     }
 
     protected function getAllRecords()
     {
-
         $filemakerRecords = Cache::get($this->getCacheKey());
 
         if ($filemakerRecords === null) {
@@ -146,7 +138,7 @@ class FilemakerModel
 
     private function getTranslatedFieldname($fieldName)
     {
-        if (key_exists($fieldName, $this->translate)) {
+        if (array_key_exists($fieldName, $this->translate)) {
             return $this->translate[$fieldName];
         }
 

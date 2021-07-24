@@ -6,7 +6,6 @@ use Carbon\Carbon;
 
 class Parser
 {
-
     public static function parseAsInteger($value)
     {
         return intval($value);
