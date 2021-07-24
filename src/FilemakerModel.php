@@ -55,7 +55,6 @@ class FilemakerModel
             $model = new static();
             foreach ($filemakerRecord->getFieldNames() as $filemakerFieldName) {
                 $fieldName = $this->getTranslatedFieldname($filemakerFieldName);
-//                dd($fieldName);
 
                 $model->$fieldName = $this->parseValueAsType($filemakerFieldName, $filemakerRecord->$filemakerFieldName);
             }
@@ -84,6 +83,11 @@ class FilemakerModel
         }
 
         return $filemakerRecords;
+    }
+
+    protected function storeRecord(array $data)
+    {
+        return $this->layout()->create($data);
     }
 
     protected function parseValueAsType($fieldName, $value)
@@ -152,5 +156,10 @@ class FilemakerModel
         Cache::forget($static->getCacheKey());
 
         return $static;
+    }
+
+    public static function create(array $data)
+    {
+        return (new static())->storeRecord($data);
     }
 }

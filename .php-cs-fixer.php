@@ -135,4 +135,5 @@ $rules = [
 
 return $config
     ->setRules($rules)
+    ->setRiskyAllowed(true)
     ->setFinder($finder);
