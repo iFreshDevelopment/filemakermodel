@@ -141,10 +141,11 @@ class FilemakerModel
     {
         $dataArray = [];
         foreach ($data as $fieldName => $value) {
-            if (in_array($fieldName, $this->dates)) {
-                $value = $value->format('d/m/Y');
-            }
             $filemakerFieldName = $this->getOriginalFieldName($fieldName);
+
+            if (in_array($fieldName, $this->dates)) {
+                $value = $value->format('m/d/Y');
+            }
 
             $dataArray[$filemakerFieldName] = $value;
         }
