@@ -13,8 +13,6 @@ class FilemakerModel
 {
     const CACHE_PREFIX = 'fm_';
 
-    private int $recordId;
-
     /*
      * Name of the layout where our records come from
      */
@@ -45,12 +43,7 @@ class FilemakerModel
      */
     protected array $translate = [];
 
-    protected function parseRecords(FileMakerRelation $filemakerRecords)
-    {
-        return collect($filemakerRecords)->map(function ($filemakerRecord) {
-            return $this->createModel($filemakerRecord);
-        });
-    }
+    private int $recordId;
 
     public function delete()
     {
@@ -61,12 +54,49 @@ class FilemakerModel
         return $this->layout()->delete($this->getRecordId());
     }
 
-    public function update($data) {
+    public function update($data)
+    {
         if (! $this->recordId) {
             throw new Exception('Record not loaded');
         }
 
         // todo: work on the update method
+    }
+
+    public static function fresh()
+    {
+        $static = new static();
+
+        Cache::forget($static->getCacheKey());
+
+        return $static;
+    }
+
+    public static function find(int $recordId)
+    {
+        return (new static())->findRecord($recordId);
+    }
+
+    public static function create(array $data)
+    {
+        return (new static())->storeRecord($data);
+    }
+
+    public static function all()
+    {
+        return (new static())->getAllRecords();
+    }
+
+    public static function where(array $queryParameters)
+    {
+        return (new static())->getSomeRecords($queryParameters);
+    }
+
+    protected function parseRecords(FileMakerRelation $filemakerRecords)
+    {
+        return collect($filemakerRecords)->map(function ($filemakerRecord) {
+            return $this->createModel($filemakerRecord);
+        });
     }
 
     protected function getRecordId()
@@ -98,6 +128,13 @@ class FilemakerModel
         }
 
         return $filemakerRecords;
+    }
+
+    protected function findRecord(int $recordId)
+    {
+        $record = $this->layout()->getRecord($recordId);
+
+        return $this->createModel($record);
     }
 
     private function storeRecord(array $data)
@@ -180,13 +217,6 @@ class FilemakerModel
         return $originalFieldname ?? $fieldName;
     }
 
-    protected function findRecord(int $recordId)
-    {
-        $record = $this->layout()->getRecord($recordId);
-
-        return $this->createModel($record);
-    }
-
     private function createModel($filemakerRecord)
     {
         $model = new static();
@@ -203,34 +233,5 @@ class FilemakerModel
         }
 
         return $model;
-    }
-
-    public static function fresh()
-    {
-        $static = new static();
-
-        Cache::forget($static->getCacheKey());
-
-        return $static;
-    }
-
-    public static function find(int $recordId)
-    {
-        return (new static())->findRecord($recordId);
-    }
-
-    public static function create(array $data)
-    {
-        return (new static())->storeRecord($data);
-    }
-
-    public static function all()
-    {
-        return (new static())->getAllRecords();
-    }
-
-    public static function where(array $queryParameters)
-    {
-        return (new static())->getSomeRecords($queryParameters);
     }
 }
