@@ -10,35 +10,34 @@ class DummyClass extends FilemakerModel
     /*
      * Name of the layout where our records come from
      */
-    protected $layout = '';
+    protected string $layout = '';
 
     /*
      * The names of fields that need to be parsed as date
      */
-    protected $dates = [];
+    protected array $dates = [];
 
     /*
      * The names of fields that need to be parsed as integer
      */
-    protected $integers = [];
+    protected array $integers = [];
 
     /*
      * The names of fields that need to be parsed as boolean
      */
-    protected $booleans = [];
+    protected array  $booleans = [];
 
     /*
      * The names of fields that need to be parsed as float
      */
-    protected $floats = [];
+    protected array $floats = [];
 
     /*
      * Array of filemaker fieldnames with our more logical names
      */
-    protected $translate = [
+    protected array $translate = [
 //        'Filemaker Field Name' => "application_name",
     ];
-
 
 }
 
