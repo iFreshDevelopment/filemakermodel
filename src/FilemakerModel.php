@@ -2,6 +2,7 @@
 
 namespace Ifresh\FilemakerModel;
 
+use Exception;
 use Ifresh\FilemakerModel\Services\Parser;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
@@ -12,66 +13,109 @@ class FilemakerModel
 {
     const CACHE_PREFIX = 'fm_';
 
-    private $filemaker;
-
     /*
      * Name of the layout where our records come from
      */
-    protected $layout = '';
+    protected string $layout = '';
 
     /*
      * The names of fields that need to be parsed as date
      */
-    protected $dates = [];
+    protected array $dates = [];
 
     /*
      * The names of fields that need to be parsed as integer
      */
-    protected $integers = [];
+    protected array $integers = [];
 
     /*
      * The names of fields that need to be parsed as boolean
      */
-    protected $booleans = [];
+    protected array $booleans = [];
 
     /*
      * The names of fields that need to be parsed as float
      */
-    protected $floats = [];
+    protected array $floats = [];
 
     /*
      * Array of filemaker fieldnames with our more logical names
      */
-    protected $translate = [];
+    protected array $translate = [];
 
-    public function __construct()
+    private ?int $recordId;
+
+    public function delete()
     {
-        $this->filemaker = app('filemaker');
+        if (! $this->recordId) {
+            throw new Exception('Record not loaded');
+        }
+
+        return $this->layout()->delete($this->getRecordId());
     }
 
-    protected function parseRecords(FileMakerRelation $filemakerRecords)
+    public function update($data)
+    {
+        if (! $this->recordId) {
+            throw new Exception('Record not loaded');
+        }
+
+        // todo: work on the update method
+    }
+
+    public static function fresh()
+    {
+        $static = new static();
+
+        Cache::forget($static->getCacheKey());
+
+        return $static;
+    }
+
+    public static function find(int $recordId)
+    {
+        return (new static())->findRecord($recordId);
+    }
+
+    public static function create(array $data)
+    {
+        return (new static())->storeRecord($data);
+    }
+
+    public static function all()
+    {
+        return (new static())->getAllRecords();
+    }
+
+    public static function where(array $queryParameters)
+    {
+        return (new static())->getSomeRecords($queryParameters);
+    }
+
+    private function parseRecords(FileMakerRelation $filemakerRecords)
     {
         return collect($filemakerRecords)->map(function ($filemakerRecord) {
-            $model = new static();
-            foreach ($filemakerRecord->getFieldNames() as $filemakerFieldName) {
-                $fieldName = $this->getTranslatedFieldname($filemakerFieldName);
-//                dd($fieldName);
-
-                $model->$fieldName = $this->parseValueAsType($filemakerFieldName, $filemakerRecord->$filemakerFieldName);
-            }
-
-            return $model;
+            return $this->createModel($filemakerRecord);
         });
     }
 
-    public function getSomeRecords(array $queryParameters)
+    private function getRecordId()
+    {
+        if (! $this->recordId) {
+            throw new Exception('Model is not loaded');
+        }
+
+        return $this->recordId;
+    }
+
+    private function getSomeRecords(array $queryParameters)
     {
         $filemakerRecords = $this->filemaker->{$this->layout}->query($queryParameters);
 
         return $this->parseRecords($filemakerRecords);
     }
 
-    protected function getAllRecords()
+    private function getAllRecords()
     {
         $filemakerRecords = Cache::get($this->getCacheKey());
 
@@ -86,7 +130,30 @@ class FilemakerModel
         return $filemakerRecords;
     }
 
-    protected function parseValueAsType($fieldName, $value)
+    private function findRecord(int $recordId)
+    {
+        $record = $this->layout()->getRecord($recordId);
+
+        return $this->createModel($record);
+    }
+
+    private function storeRecord(array $data)
+    {
+        $dataArray = [];
+        foreach ($data as $fieldName => $value) {
+            $filemakerFieldName = $this->getOriginalFieldName($fieldName);
+
+            if (in_array($fieldName, $this->dates)) {
+                $value = $value->format('m/d/Y');
+            }
+
+            $dataArray[$filemakerFieldName] = $value;
+        }
+
+        return $this->layout()->create($dataArray);
+    }
+
+    private function parseValueAsType($fieldName, $value)
     {
         if ($value == '') {
             return null;
@@ -111,29 +178,23 @@ class FilemakerModel
         return Parser::parseAsString($value);
     }
 
-    protected function getModelName()
+    private function getModelName()
     {
         return (new ReflectionClass(new static()))->getShortName();
     }
 
-    protected function getCacheKey()
+    private function getCacheKey()
     {
         return self::CACHE_PREFIX . Str::lower($this->getModelName());
     }
 
-    public static function all()
-    {
-        return (new static())->getAllRecords();
-    }
-
-    public static function where(array $queryParameters)
-    {
-        return (new static())->getSomeRecords($queryParameters);
-    }
-
     private function layout()
     {
-        return $this->filemaker->{$this->layout};
+        if (! $this->layout) {
+            throw new Exception('Layout is not defined');
+        }
+
+        return app('filemaker')->{$this->layout};
     }
 
     private function getTranslatedFieldname($fieldName)
@@ -145,12 +206,33 @@ class FilemakerModel
         return $fieldName;
     }
 
-    public static function fresh()
+    private function getOriginalFieldName($fieldName)
     {
-        $static = new static();
+        $originalFieldname = collect($this->translate)
+            ->filter(function ($translatableFieldName) use ($fieldName) {
+                return $translatableFieldName === $fieldName;
+            })
+            ->keys()
+            ->first();
 
-        Cache::forget($static->getCacheKey());
+        return $originalFieldname ?? $fieldName;
+    }
 
-        return $static;
+    private function createModel($filemakerRecord)
+    {
+        $model = new static();
+
+        $model->recordId = Parser::parseAsInteger($filemakerRecord->getRecordId());
+
+        foreach ($filemakerRecord->getFieldNames() as $filemakerFieldName) {
+            $fieldName = $this->getTranslatedFieldname($filemakerFieldName);
+
+            $model->$fieldName = $this->parseValueAsType(
+                $filemakerFieldName,
+                $filemakerRecord->$filemakerFieldName
+            );
+        }
+
+        return $model;
     }
 }
