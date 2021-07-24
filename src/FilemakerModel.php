@@ -12,37 +12,37 @@ class FilemakerModel
 {
     const CACHE_PREFIX = 'fm_';
 
-    private $filemaker;
+    private int $recordId;
 
     /*
      * Name of the layout where our records come from
      */
-    protected $layout = '';
+    protected string $layout = '';
 
     /*
      * The names of fields that need to be parsed as date
      */
-    protected $dates = [];
+    protected array $dates = [];
 
     /*
      * The names of fields that need to be parsed as integer
      */
-    protected $integers = [];
+    protected array $integers = [];
 
     /*
      * The names of fields that need to be parsed as boolean
      */
-    protected $booleans = [];
+    protected array $booleans = [];
 
     /*
      * The names of fields that need to be parsed as float
      */
-    protected $floats = [];
+    protected array $floats = [];
 
     /*
      * Array of filemaker fieldnames with our more logical names
      */
-    protected $translate = [];
+    protected array $translate = [];
 
     public function __construct()
     {
@@ -63,7 +63,7 @@ class FilemakerModel
         });
     }
 
-    public function getSomeRecords(array $queryParameters)
+    protected function getSomeRecords(array $queryParameters)
     {
         $filemakerRecords = $this->filemaker->{$this->layout}->query($queryParameters);
 
@@ -85,12 +85,12 @@ class FilemakerModel
         return $filemakerRecords;
     }
 
-    protected function storeRecord(array $data)
+    private function storeRecord(array $data)
     {
         return $this->layout()->create($data);
     }
 
-    protected function parseValueAsType($fieldName, $value)
+    private function parseValueAsType($fieldName, $value)
     {
         if ($value == '') {
             return null;
@@ -115,17 +115,17 @@ class FilemakerModel
         return Parser::parseAsString($value);
     }
 
-    protected function getModelName()
+    private function getModelName()
     {
         return (new ReflectionClass(new static()))->getShortName();
     }
 
-    protected function getCacheKey()
+    private function getCacheKey()
     {
         return self::CACHE_PREFIX . Str::lower($this->getModelName());
     }
 
-    public static function all()
+    private function layout()
     {
         return (new static())->getAllRecords();
     }
