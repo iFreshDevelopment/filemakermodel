@@ -24,4 +24,21 @@ protected $layout = 'filemaker_layout_name'
 Get your records
 ```
 App\Filemaker\Modelname::all();
+// returns an eloquent collection with all models
+```
+
+If you know the Filemaker internal recordId, you can fetch records with the `find` method.
+```
+App\Filemaker\Modelname::find(234);
+// returns a single model instance
+```
+
+## Create a record
+You can create records with ease by using an eloquent like method:
+```
+$recordId = App\Filemaker\Modelname::create([
+    'key1' => 'value',
+    'key2' => 'value2'
+]);
+// returns the given recordId
 ```
