@@ -17,6 +17,10 @@ class FilemakerModelServiceProvider extends ServiceProvider
                 MakeFilemakerModelCommand::class,
             ]);
         }
+
+        $this->publishes([
+            __DIR__.'/Config/filemaker.php' => config_path('filemaker.php'),
+        ]);
     }
 
     public function register()
