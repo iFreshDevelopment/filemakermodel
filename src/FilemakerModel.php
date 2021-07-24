@@ -43,7 +43,7 @@ class FilemakerModel
      */
     protected array $translate = [];
 
-    private int $recordId;
+    private ?int $recordId;
 
     public function delete()
     {
@@ -92,14 +92,14 @@ class FilemakerModel
         return (new static())->getSomeRecords($queryParameters);
     }
 
-    protected function parseRecords(FileMakerRelation $filemakerRecords)
+    private function parseRecords(FileMakerRelation $filemakerRecords)
     {
         return collect($filemakerRecords)->map(function ($filemakerRecord) {
             return $this->createModel($filemakerRecord);
         });
     }
 
-    protected function getRecordId()
+    private function getRecordId()
     {
         if (! $this->recordId) {
             throw new Exception('Model is not loaded');
@@ -108,14 +108,14 @@ class FilemakerModel
         return $this->recordId;
     }
 
-    protected function getSomeRecords(array $queryParameters)
+    private function getSomeRecords(array $queryParameters)
     {
         $filemakerRecords = $this->filemaker->{$this->layout}->query($queryParameters);
 
         return $this->parseRecords($filemakerRecords);
     }
 
-    protected function getAllRecords()
+    private function getAllRecords()
     {
         $filemakerRecords = Cache::get($this->getCacheKey());
 
@@ -130,7 +130,7 @@ class FilemakerModel
         return $filemakerRecords;
     }
 
-    protected function findRecord(int $recordId)
+    private function findRecord(int $recordId)
     {
         $record = $this->layout()->getRecord($recordId);
 
