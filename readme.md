@@ -3,7 +3,7 @@
 ## Installation
 Install the package using composer
 ```php
-composer require ifresh/filemakermodel
+composer require ifresh/filemaker-model
 ```
 After installation publish the config file using
 ```php
