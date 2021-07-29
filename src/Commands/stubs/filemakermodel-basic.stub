@@ -1,0 +1,14 @@
+<?php
+
+namespace DummyNamespace;
+
+use Ifresh\FilemakerModel\FilemakerModel;
+
+class DummyClass extends FilemakerModel
+{
+
+    protected string $layout = '';
+
+}
+
+

@@ -99,7 +99,7 @@ class FilemakerModel
         });
     }
 
-    private function getRecordId()
+    public function getRecordId()
     {
         if (! $this->recordId) {
             throw new Exception('Model is not loaded');
@@ -120,7 +120,12 @@ class FilemakerModel
         $filemakerRecords = Cache::get($this->getCacheKey());
 
         if ($filemakerRecords === null) {
-            $filemakerRecordSum = 300;
+
+
+
+
+
+            $filemakerRecordSum = 99999;
             $filemakerRecords   = $this->parseRecords(
                 $this->layout()->query(null, null, null, $filemakerRecordSum, null, null)
             );

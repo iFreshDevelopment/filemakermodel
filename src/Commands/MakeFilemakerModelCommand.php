@@ -7,13 +7,17 @@ use Symfony\Component\Console\Input\InputOption;
 
 class MakeFilemakerModelCommand extends GeneratorCommand
 {
-    public $signature = 'filemaker:model {name}';
+    public $signature = 'make:filemaker {name} {--f|full}';
 
     public $description = 'Create a filemaker model wrapper';
 
     protected function getStub(): string
     {
-        return __DIR__ . '/stubs/filemakermodel.stub';
+        $stubFilename = $this->option('full')
+            ? 'filemakermodel.stub'
+            : 'filemakermodel-basic.stub';
+
+        return __DIR__ . '/stubs/' . $stubFilename;
     }
 
     protected function getDefaultNamespace($rootNamespace): string
