@@ -77,6 +77,13 @@ class FilemakerModel
         return (new static())->findRecord($recordId);
     }
 
+    public static function findInCache(int $recordId)
+    {
+        return (new static())->getAllRecords($recordId)
+            ->filter(fn ($record) => $record->getRecordId() === $recordId)
+            ->first();
+    }
+
     public static function create(array $data)
     {
         return (new static())->storeRecord($data);
@@ -92,20 +99,20 @@ class FilemakerModel
         return (new static())->getSomeRecords($queryParameters);
     }
 
-    private function parseRecords(FileMakerRelation $filemakerRecords)
-    {
-        return collect($filemakerRecords)->map(function ($filemakerRecord) {
-            return $this->createModel($filemakerRecord);
-        });
-    }
-
     public function getRecordId()
     {
         if (! $this->recordId) {
             throw new Exception('Model is not loaded');
         }
 
-        return $this->recordId;
+        return (int) $this->recordId;
+    }
+
+    private function parseRecords(FileMakerRelation $filemakerRecords)
+    {
+        return collect($filemakerRecords)->map(function ($filemakerRecord) {
+            return $this->createModel($filemakerRecord);
+        });
     }
 
     private function getSomeRecords(array $queryParameters)
@@ -120,11 +127,6 @@ class FilemakerModel
         $filemakerRecords = Cache::get($this->getCacheKey());
 
         if ($filemakerRecords === null) {
-
-
-
-
-
             $filemakerRecordSum = 99999;
             $filemakerRecords   = $this->parseRecords(
                 $this->layout()->query(null, null, null, $filemakerRecordSum, null, null)
