@@ -117,9 +117,11 @@ class FilemakerModel
 
     private function getSomeRecords(array $queryParameters)
     {
-        $filemakerRecords = $this->filemaker->{$this->layout}->query($queryParameters);
+        $filemakerRecords = $this->layout()->query($queryParameters);
 
-        return $this->parseRecords($filemakerRecords);
+        return $filemakerRecords
+            ? $this->parseRecords($filemakerRecords)
+            :  null;
     }
 
     private function getAllRecords()
