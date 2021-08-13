@@ -120,8 +120,8 @@ class FilemakerModel
         $filemakerRecords = $this->layout()->query($queryParameters);
 
         return $filemakerRecords
-            ? $this->parseRecords($filemakerRecords)
-            :  null;
+                ? $this->parseRecords($filemakerRecords)
+                : collect();
     }
 
     private function getAllRecords()
