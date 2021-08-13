@@ -3,6 +3,7 @@
 namespace Ifresh\FilemakerModel;
 
 use Exception;
+use Ifresh\FilemakerModel\Services\Builder;
 use Ifresh\FilemakerModel\Services\Parser;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
@@ -80,8 +81,8 @@ class FilemakerModel
     public static function findInCache(int $recordId)
     {
         return (new static())->getAllRecords($recordId)
-            ->filter(fn ($record) => $record->getRecordId() === $recordId)
-            ->first();
+                ->filter(fn ($record) => $record->getRecordId() === $recordId)
+                ->first();
     }
 
     public static function create(array $data)
@@ -94,7 +95,7 @@ class FilemakerModel
         return (new static())->getAllRecords();
     }
 
-    public static function where(array $queryParameters)
+    public static function whereLike(array $queryParameters)
     {
         return (new static())->getSomeRecords($queryParameters);
     }
@@ -108,11 +109,23 @@ class FilemakerModel
         return (int) $this->recordId;
     }
 
-    private function parseRecords(FileMakerRelation $filemakerRecords)
+    public static function api()
+    {
+        $model = new static();
+
+        return $model->layout();
+    }
+
+    public function parseRecords(FileMakerRelation $filemakerRecords)
     {
         return collect($filemakerRecords)->map(function ($filemakerRecord) {
             return $this->createModel($filemakerRecord);
         });
+    }
+
+    public static function where($column, $operator, $value)
+    {
+        return (new Builder(new static()))->where($column, $operator, $value);
     }
 
     private function getSomeRecords(array $queryParameters)
@@ -120,8 +133,8 @@ class FilemakerModel
         $filemakerRecords = $this->layout()->query($queryParameters);
 
         return $filemakerRecords
-            ? $this->parseRecords($filemakerRecords)
-            :  null;
+                ? $this->parseRecords($filemakerRecords)
+                : collect();
     }
 
     private function getAllRecords()
@@ -218,11 +231,11 @@ class FilemakerModel
     private function getOriginalFieldName($fieldName)
     {
         $originalFieldname = collect($this->translate)
-            ->filter(function ($translatableFieldName) use ($fieldName) {
-                return $translatableFieldName === $fieldName;
-            })
-            ->keys()
-            ->first();
+                ->filter(function ($translatableFieldName) use ($fieldName) {
+                    return $translatableFieldName === $fieldName;
+                })
+                ->keys()
+                ->first();
 
         return $originalFieldname ?? $fieldName;
     }
