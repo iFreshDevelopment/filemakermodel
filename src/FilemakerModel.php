@@ -108,6 +108,13 @@ class FilemakerModel
         return (int) $this->recordId;
     }
 
+    public static function api()
+    {
+        $model = new static();
+
+        return $model->layout();
+    }
+
     private function parseRecords(FileMakerRelation $filemakerRecords)
     {
         return collect($filemakerRecords)->map(function ($filemakerRecord) {
