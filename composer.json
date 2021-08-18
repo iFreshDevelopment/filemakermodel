@@ -20,7 +20,8 @@
         }
     },
     "require": {
-        "inter-mediator/fmdataapi": "20",
-        "laravel/framework": "^v8.0.0"
+        "inter-mediator/fmdataapi": "^20",
+        "illuminate/collections": ">=6",
+        "illuminate/support": ">=6"
     }
 }
