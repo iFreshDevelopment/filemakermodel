@@ -21,7 +21,6 @@
     },
     "require": {
         "inter-mediator/fmdataapi": "^20",
-        "illuminate/collections": ">=6",
-        "illuminate/support": ">=6"
+        "laravel/framework": ">=6"
     }
 }
