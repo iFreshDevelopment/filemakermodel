@@ -108,6 +108,11 @@ class FilemakerModel
         return (int) $this->recordId;
     }
 
+    public static function hydrate(FileMakerRelation $records)
+    {
+        return (new static)->parseRecords($records);
+    }
+
     public static function api()
     {
         $model = new static();
