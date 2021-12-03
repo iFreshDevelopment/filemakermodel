@@ -44,7 +44,8 @@ class FilemakerModel
     protected array $translate = [];
 
     /*
-     * Array of portal names containing an array of field names [ 'fieldname' => 'logical_fieldname']
+     * Array of portal names containing an array of field names
+     * $portals = ['portalname' => ['fieldname' => 'logical_fieldname']];
      */
     protected array $portals = [];
 

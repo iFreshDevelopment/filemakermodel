@@ -39,6 +39,15 @@ class DummyClass extends FilemakerModel
 //        'Filemaker Field Name' => "application_name",
     ];
 
+    /*
+     * Array of portal names containing an array of field names
+     * $portals = ['portalname' => ['fieldname' => 'logical_fieldname']];
+     */
+    protected array $portals = [
+//      'portalname' =>
+//          ['fieldname' => 'logical_fieldname'];
+    ];
+
 }
 
 
