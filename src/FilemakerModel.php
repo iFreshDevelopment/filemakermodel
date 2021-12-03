@@ -43,6 +43,11 @@ class FilemakerModel
      */
     protected array $translate = [];
 
+    /*
+     * Array of portal names containing an array of field names [ 'fieldname' => 'logical_fieldname']
+     */
+    protected array $portals = [];
+
     private ?int $recordId;
 
     public function delete()
@@ -252,6 +257,22 @@ class FilemakerModel
                 $filemakerFieldName,
                 $filemakerRecord->$filemakerFieldName
             );
+        }
+
+        foreach($this->portals as $portalName => $fieldMap)
+        {
+            $relationObject = $filemakerRecord->field($portalName);
+            $records = [];
+            foreach($relationObject as $databaseRecord){
+                $record = new \stdClass();
+                $record->id = (int) $databaseRecord->getRecordId();
+                foreach($fieldMap as $originalFieldName => $newFieldName){
+                    $record->$newFieldName = $databaseRecord->$originalFieldName;
+                }
+                array_push($records, $record);
+
+            }
+            $model->portalData[$portalName] = $records;
         }
 
         return $model;
