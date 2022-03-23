@@ -20,7 +20,7 @@
         }
     },
     "require": {
-        "inter-mediator/fmdataapi": "^20",
+        "inter-mediator/fmdataapi": "^24",
         "laravel/framework": ">=6"
     }
 }
